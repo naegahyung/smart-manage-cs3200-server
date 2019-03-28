@@ -9,7 +9,7 @@ def post_sql_data(db, query, body):
     return json.dumps(result)
 
 def _sql_commit(db, query):
-    cursor = db.cursor() 
+    cursor = db.cursor()
     cursor.execute(query)
     db.commit()
     cursor.close()

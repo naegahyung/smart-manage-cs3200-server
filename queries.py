@@ -54,3 +54,6 @@ def add_task_with_property(body):
     INSERT INTO `smart_manage`.`task` (id, body, created, created_by, updated, done, property_id)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")
     ''' % (body['id'], body['body'], body['created'], body['created_by'], body['updated'], body['done'], body['property_id'])
+
+def delete_task(body):
+    return 'DELETE FROM `smart_manage`.`task` WHERE `id` = "%s"' % (body['id'])

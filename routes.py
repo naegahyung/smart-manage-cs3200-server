@@ -47,7 +47,6 @@ def initialize_routes(app, db):
             if 'property_id' not in body:
                 return post_sql_data(db, add_task, body)
             return post_sql_data(db, add_task_with_property, body)
-        if request.method = 'DELETE':
-            to_be_deleted = body['id']
-            # implement delete for task
+        if request.method == 'DELETE':
+            return post_sql_data(db, delete_task, body)
         return ''
