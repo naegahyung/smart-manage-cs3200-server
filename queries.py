@@ -4,7 +4,14 @@ FROM smart_manage.Managed_property p
 LEFT JOIN address a on p.location = a.geo_location
 '''
 
-SHOW_ALL_TASKS = 'SELECT * FROM `smart_manage`.`task` as `task` WHERE `task`.`done` = 0 ORDER BY `task`.`updated` DESC'
+SHOW_ALL_TASKS = '''
+SELECT t.id, t.body, t.created, t.updated, CONCAT(street1, ' ', `street 2`, ' ', city, ', ', state, ' ', zip) as full_address
+FROM `smart_manage`.`task` t
+left join managed_property p on t.property_id = p.id 
+left join address a on p.location = a.geo_location
+WHERE t.`done` = 0 
+ORDER BY t.`updated` DESC
+'''
 
 SHOW_ALL_NEWS = '''
 SELECT * 
@@ -24,6 +31,7 @@ FROM (
 	LEFT JOIN `smart_manage`.`address` `a` ON `p`.`location` = `a`.`geo_location`
 	WHERE `last_maintenance` is NOT NULL
 ) as all_updates
+WHERE `all_updates`.`due` > DATE_SUB(NOW(), INTERVAL 1 MONTH)
 ORDER BY `all_updates`.`due`
 '''
 
@@ -44,8 +52,24 @@ def show_property_info(id):
     AND `t`.`living_location` = "%s"
     """ % (id, id)
 
+def get_property_address(id):
+    return '''
+    SELECT CONCAT(street1, " ", `street 2`, " ", city, " ", state, " ", zip) full_address
+	FROM address a, managed_property p
+    WHERE p.id = "%s"
+		AND p.location = a.geo_location
+    LIMIT 1
+    ''' % (id)
+
 def show_tasks_under_property(id):
-    return 'SELECT * FROM `smart_manage`.`task` WHERE `property_id` = "%s"' % (id)
+    return '''
+    SELECT t.id, t.body, t.created, t.updated, CONCAT(street1, ' ', `street 2`, ' ', city, ', ', state, ' ', zip) as full_address
+    FROM `smart_manage`.`task` t
+    left join managed_property p on t.property_id = p.id 
+    left join address a on p.location = a.geo_location
+    WHERE t.`done` = 0 AND p.id = "%s" 
+    ORDER BY t.`updated` DESC
+    ''' % (id)
 
 def add_task(body):
     return '''

@@ -24,6 +24,14 @@ def get_sql_data(query):
     json_string = _convert_mysql_json_string(sql_data_with_header)
     return json.dumps(json_string)
 
+def get_sql_data_single_value(query):
+    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
+    sql_data_with_header = _sql_execute(db, query)
+    db.close()
+    data = sql_data_with_header[1]
+    print(data[0][0])
+    return data[0][0]
+
 def _sql_execute(db, query):
     cursor = db.cursor()
     cursor.execute(query)

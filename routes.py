@@ -1,4 +1,4 @@
-from utils import get_sql_data, post_sql_data
+from utils import get_sql_data, post_sql_data, get_sql_data_single_value
 from queries import *
 from flask import request
 import json
@@ -43,9 +43,11 @@ def initialize_routes(app):
             body['created'] = time
             body['updated'] = time
             body['done'] = 0
-            print(body)
             if 'property_id' not in body:
                 return post_sql_data(add_task, body)
+            address = get_sql_data_single_value(get_property_address(body['property_id']))
+
+            body['full_address'] = address
             return post_sql_data(add_task_with_property, body)
         if request.method == 'DELETE':
             return post_sql_data(delete_task, body)
