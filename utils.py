@@ -1,8 +1,11 @@
+import mysql.connector as mysql
 import re
 import json
 
-def post_sql_data(db, query, body):
+def post_sql_data(query, body):
+    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
     _sql_commit(db, query(body))
+    db.close()
     result = {}
     for key, value in body.items():
         result[str(key)] = str(value)
@@ -14,8 +17,10 @@ def _sql_commit(db, query):
     db.commit()
     cursor.close()
 
-def get_sql_data(db, query):
+def get_sql_data(query):
+    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
     sql_data_with_header = _sql_execute(db, query)
+    db.close()
     json_string = _convert_mysql_json_string(sql_data_with_header)
     return json.dumps(json_string)
 

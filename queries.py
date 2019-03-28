@@ -1,6 +1,10 @@
-SHOW_ALL_PROPERTIES = 'SELECT * FROM `smart_manage`.`managed_property`'
+SHOW_ALL_PROPERTIES = '''
+SELECT `p`.`id`, street1, `street 2`, city, state, zip, `status`, rooms, bathrooms, rent_amount, rent_due, property_type
+FROM smart_manage.Managed_property p
+LEFT JOIN address a on p.location = a.geo_location
+'''
 
-SHOW_ALL_TASKS = 'SELECT * FROM `smart_manage`.`task` as `task` ORDER BY `task`.`updated`'
+SHOW_ALL_TASKS = 'SELECT * FROM `smart_manage`.`task` as `task` WHERE `task`.`done` = 0 ORDER BY `task`.`updated` DESC'
 
 SHOW_ALL_NEWS = '''
 SELECT * 
@@ -56,4 +60,16 @@ def add_task_with_property(body):
     ''' % (body['id'], body['body'], body['created'], body['created_by'], body['updated'], body['done'], body['property_id'])
 
 def delete_task(body):
-    return 'DELETE FROM `smart_manage`.`task` WHERE `id` = "%s"' % (body['id'])
+    return 'DELETE FROM `smart_manage`.`task` WHERE `id` = "%s"' % (body['data']['id'])
+
+def search_address_query(body):
+    return '''
+    SELECT *
+    FROM (
+        SELECT CONCAT(street1, " ", `street 2`, " ", city, " ", state, " ", zip) full_address, p.id
+        FROM address a
+        RIGHT JOIN managed_property p on a.geo_location =  p.location
+    ) full_addresses
+    WHERE `full_address` LIKE "%s"
+    LIMIT 5
+    ''' % ("%" + body['query'] + "%")
