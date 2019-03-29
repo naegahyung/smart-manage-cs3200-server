@@ -97,3 +97,10 @@ def search_address_query(body):
     WHERE `full_address` LIKE "%s"
     LIMIT 5
     ''' % ("%" + body['query'] + "%")
+
+def update_task_body(body):
+    return '''
+    UPDATE `smart_manage`.`task`
+    SET body = "%s", updated = "%s"
+    WHERE id = "%s"
+    ''' % (body['body'], body['updated'], body['id'])

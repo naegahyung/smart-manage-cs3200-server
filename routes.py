@@ -33,7 +33,7 @@ def initialize_routes(app):
     def get_tasks_from_property(id):
         return get_sql_data(show_tasks_under_property(id))
 
-    @app.route('/api/task', methods= ['POST', 'DELETE'])
+    @app.route('/api/task', methods= ['POST', 'DELETE', 'PATCH'])
     def create_task():
         body = json.loads(request.data)
         # body will only contain created_by, body, OPTIONAL (property_id)
@@ -51,6 +51,9 @@ def initialize_routes(app):
             return post_sql_data(add_task_with_property, body)
         if request.method == 'DELETE':
             return post_sql_data(delete_task, body)
+        if request.method == 'PATCH':
+            body['updated'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            return post_sql_data(update_task_body, body)
         return ''
 
     @app.route('/api/address/search', methods=['POST'])
@@ -60,4 +63,4 @@ def initialize_routes(app):
         if request.method == 'POST':
             return get_sql_data(search_address_query(body))
         return
-        
+    
