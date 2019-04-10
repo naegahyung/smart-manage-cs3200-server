@@ -133,3 +133,6 @@ def add_tenant(body):
     INSERT INTO `smart_manage`.`Tenant` (id, name, last_paid, living_location, credit_score, contract_expiration)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s")
     ''' % (body['id'], body['name'], body['lastPaid'], body['location'], body['creditScore'], body['contractExpiration'])
+
+def delete_property(body):
+    return 'CALL delete_property("%s")' % (body['propertyId'])

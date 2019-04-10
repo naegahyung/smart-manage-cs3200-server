@@ -64,9 +64,9 @@ def initialize_routes(app):
             return get_sql_data(search_address_query(body))
         return
     
-    @app.route('/api/property', methods = ['POST'])
+    @app.route('/api/property', methods = ['POST', 'DELETE'])
     def create_property():
-        body = json.loads(request.data)['body']
+        body = json.loads(request.data)
         if request.method == 'POST':
             address_id = str(uuid.uuid4())
             address_body = body['step0']
@@ -104,4 +104,6 @@ def initialize_routes(app):
             return_body['rooms'] = body['step1']['bedrooms']
             return_body['property_type'] = body['step1']['houseType']
             return json.dumps(return_body)
+        if request.method == 'DELETE':
+            return post_sql_data(delete_property, body)
         return ''

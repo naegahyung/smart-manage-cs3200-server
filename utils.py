@@ -2,10 +2,6 @@ import mysql.connector as mysql
 import re
 import json
 
-def add_property_sql():
-    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
-
-
 def post_sql_data(query, body):
     db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
     _sql_commit(db, query(body))
