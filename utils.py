@@ -2,20 +2,31 @@ import mysql.connector as mysql
 import re
 import json
 
+def add_property_sql():
+    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
+
+
 def post_sql_data(query, body):
     db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
     _sql_commit(db, query(body))
-    db.close()
     result = {}
     for key, value in body.items():
         result[str(key)] = str(value)
     return json.dumps(result)
 
 def _sql_commit(db, query):
-    cursor = db.cursor()
-    cursor.execute(query)
-    db.commit()
-    cursor.close()
+    try:
+        cursor = db.cursor()
+        cursor.execute(query)
+        db.commit()
+    except (mysql.OperationalError):
+        print("Attempting to reconnect for select query" + query) 
+        db.connect()
+        _sql_commit(db, query)
+    finally:
+        cursor.close()
+        db.close()
+
 
 def get_sql_data(query):
     db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
@@ -27,17 +38,24 @@ def get_sql_data(query):
 def get_sql_data_single_value(query):
     db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
     sql_data_with_header = _sql_execute(db, query)
-    db.close()
     data = sql_data_with_header[1]
     print(data[0][0])
     return data[0][0]
 
 def _sql_execute(db, query):
-    cursor = db.cursor()
-    cursor.execute(query)
-    row_headers = [x[0].encode('utf-8') for x in cursor.description]
-    data = [[str(item) for item in results] for results in cursor.fetchall()]
-    cursor.close()
+    try:
+        cursor = db.cursor()
+        cursor.execute(query)
+        row_headers = [x[0].encode('utf-8') for x in cursor.description]
+        data = [[str(item) for item in results] for results in cursor.fetchall()]
+    except (mysql.OperationalError):
+        print("Attempting to reconnect for select query " + query) 
+        db.connect()
+        _sql_execute(db, query)
+    finally:
+        cursor.close()
+        db.close()
+    
     return [row_headers, data]
 
 def _convert_mysql_json_string(sql_query_result):

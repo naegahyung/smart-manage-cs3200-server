@@ -104,3 +104,32 @@ def update_task_body(body):
     SET body = "%s", updated = "%s"
     WHERE id = "%s"
     ''' % (body['body'], body['updated'], body['id'])
+
+
+def add_owner(body):
+    return '''
+    INSERT INTO `smart_manage`.`Property_owner` (id, name, email, phone_num)
+    VALUES ("%s", "%s", "%s", "%s")
+    ''' % (body['id'], body['name'], body['email'], body['phoneNum'])
+
+def add_address(body):
+    return '''
+    INSERT INTO `smart_manage`.`Address` (geo_location, street1, `street 2`, city, state, zip)
+    VALUES ("%s", "%s", "%s", "%s", "%s", "%s")
+    ''' % (body['id'], body['street1'], body['street2'], body['city'], body['state'], body['zip'])
+
+def add_property(body):
+    return '''
+    INSERT INTO `smart_manage`.`Managed_property` 
+    (id, location, property_type, managed_by, owned_by, last_maintenance, last_visited, 
+    value, tax_amount, rent_due, total_spending, rent_amount, status, rooms, bathrooms)
+    VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")
+    ''' % (body['id'], body['location'], body['houseType'], body['managedBy'], body['ownedBy'], body['lastMaintenance'],
+    body['lastVisited'], body['value'], body['tax'], body['rentDue'], body['totalSpending'], 
+    body['rent'], body['status'], body['bedrooms'], body['bathrooms'])
+
+def add_tenant(body):
+    return '''
+    INSERT INTO `smart_manage`.`Tenant` (id, name, last_paid, living_location, credit_score, contract_expiration)
+    VALUES ("%s", "%s", "%s", "%s", "%s", "%s")
+    ''' % (body['id'], body['name'], body['lastPaid'], body['location'], body['creditScore'], body['contractExpiration'])

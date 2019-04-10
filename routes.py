@@ -64,3 +64,44 @@ def initialize_routes(app):
             return get_sql_data(search_address_query(body))
         return
     
+    @app.route('/api/property', methods = ['POST'])
+    def create_property():
+        body = json.loads(request.data)['body']
+        if request.method == 'POST':
+            address_id = str(uuid.uuid4())
+            address_body = body['step0']
+            address_body['id'] = address_id
+            address = post_sql_data(add_address, address_body)
+
+            owner_id = str(uuid.uuid4())
+            owner_body = body['step3']
+            owner_body['id'] = owner_id
+            owner = post_sql_data(add_owner, owner_body)
+
+            property_id = str(uuid.uuid4())
+            property_body = body['step1']
+            property_body['id'] = property_id
+            property_body['location'] = address_id
+            property_body['managedBy'] = "f9a88fd7-8341-4355-a460-bbc0e79cb104"
+            property_body['ownedBy'] = owner_id
+            property_body['rentDue'] = body['step2']['rentDue']
+            property_body['status'] = 'OCCUPIED' if property_body['occupied'] == True else 'VACANT'
+            property_info = post_sql_data(add_property, property_body)
+
+            tenant_id = str(uuid.uuid4())
+            tenant_body = body['step2']
+            tenant_body['id'] = tenant_id
+            tenant_body['location'] = property_id
+            tenant = post_sql_data(add_tenant, tenant_body)
+
+            return_body = body['step1']
+            return_body['street1'] = body['step0']['street1']
+            return_body['street 2'] = body['step0']['street2']
+            return_body['city'] = body['step0']['city']
+            return_body['state'] = body['step0']['state']
+            return_body['zip'] = body['step0']['zip']
+            return_body['rent_amount'] = body['step1']['rent']
+            return_body['rooms'] = body['step1']['bedrooms']
+            return_body['property_type'] = body['step1']['houseType']
+            return json.dumps(return_body)
+        return ''
