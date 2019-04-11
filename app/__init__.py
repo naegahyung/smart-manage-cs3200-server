@@ -6,9 +6,11 @@ import os
 
 load_dotenv()
 app = Flask(__name__, static_folder=None)
+@app.route('/')
+def hello_world():
+    return 'Welcome'
 
 if __name__ == "__main__":
-    initialize_routes(app)
     port = int(os.environ.get("PORT", 5000))
-    app.run(port=port)
+    app.run(host='0.0.0.0', port=port)
 
