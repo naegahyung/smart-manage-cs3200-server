@@ -60,8 +60,8 @@ CREATE TABLE `Contract` (
   `payment_amount` float(12,2) NOT NULL,
   PRIMARY KEY (`property_manager_id`,`property_owner_id`),
   KEY `owner_idx` (`property_owner_id`),
-  CONSTRAINT `manager_fk` FOREIGN KEY (`property_manager_id`) REFERENCES `property_manager` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `owner_fk` FOREIGN KEY (`property_owner_id`) REFERENCES `property_owner` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+  CONSTRAINT `manager_fk` FOREIGN KEY (`property_manager_id`) REFERENCES `Property_manager` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `owner_fk` FOREIGN KEY (`property_owner_id`) REFERENCES `Property_owner` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -102,9 +102,9 @@ CREATE TABLE `Managed_property` (
   KEY `managed_by_idx` (`managed_by`),
   KEY `address_idx` (`location`),
   KEY `owned_by_idx` (`owned_by`),
-  CONSTRAINT `managed_fk` FOREIGN KEY (`managed_by`) REFERENCES `property_manager` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `owned_fk` FOREIGN KEY (`owned_by`) REFERENCES `property_owner` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `property_address_fk` FOREIGN KEY (`location`) REFERENCES `address` (`geo_location`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `managed_fk` FOREIGN KEY (`managed_by`) REFERENCES `Property_manager` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `owned_fk` FOREIGN KEY (`owned_by`) REFERENCES `Property_owner` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `property_address_fk` FOREIGN KEY (`location`) REFERENCES `Address` (`geo_location`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -134,7 +134,7 @@ CREATE TABLE `management_company` (
   `location` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `address_geo_idx` (`location`),
-  CONSTRAINT `address_geo` FOREIGN KEY (`location`) REFERENCES `address` (`geo_location`)
+  CONSTRAINT `address_geo` FOREIGN KEY (`location`) REFERENCES `Address` (`geo_location`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -164,7 +164,7 @@ CREATE TABLE `Property_manager` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username_UNIQUE` (`username`),
   KEY `company_idx` (`parent_company`),
-  CONSTRAINT `parent_company_fk` FOREIGN KEY (`parent_company`) REFERENCES `management_company` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `parent_company_fk` FOREIGN KEY (`parent_company`) REFERENCES `Management_company` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -222,8 +222,8 @@ CREATE TABLE `Task` (
   PRIMARY KEY (`id`),
   KEY `creator_idx` (`created_by`),
   KEY `property_idx` (`property_id`),
-  CONSTRAINT `creator_fk` FOREIGN KEY (`created_by`) REFERENCES `property_manager` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `property_fk` FOREIGN KEY (`property_id`) REFERENCES `managed_property` (`id`)
+  CONSTRAINT `creator_fk` FOREIGN KEY (`created_by`) REFERENCES `Property_manager` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `property_fk` FOREIGN KEY (`property_id`) REFERENCES `Managed_property` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -253,7 +253,7 @@ CREATE TABLE `Tenant` (
   `contract_expiration` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `living_in_idx` (`living_location`),
-  CONSTRAINT `living_in` FOREIGN KEY (`living_location`) REFERENCES `managed_property` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `living_in` FOREIGN KEY (`living_location`) REFERENCES `Managed_property` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -280,21 +280,21 @@ UNLOCK TABLES;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
 CREATE PROCEDURE `delete_property`(
-property_id VARCHAR(60)
+IN property_id VARCHAR(60)
 )
 BEGIN 
 	DECLARE tenant_id VARCHAR(60);
 	DECLARE owner_id VARCHAR(60);
 	DECLARE address_id VARCHAR(255);
-    
-	SET tenant_id = (SELECT id FROM `smart_manage`.`tenant` WHERE living_location = property_id);
-    DELETE FROM `smart_manage`.`tenant` WHERE id = tenant_id;
-    SET owner_id = (SELECT owned_by FROM `smart_manage`.`Managed_Property` WHERE id = property_id);
-	SET address_id = (SELECT location FROM `smart_manage`.`Managed_Property` WHERE id = property_id);
-    DELETE t FROM `smart_manage`.`Task` t WHERE t.property_id = property_id; 
-    DELETE FROM `smart_manage`.`Managed_property` WHERE id = property_id;
-    DELETE FROM `smart_manage`.`Property_owner` WHERE id = owner_id;
-    DELETE FROM `smart_manage`.`Address` WHERE geo_location = address_id;
+
+	SET tenant_id = (SELECT id FROM `Tenant` WHERE living_location COLLATE utf8_unicode_ci = property_id);
+    DELETE FROM `Tenant` WHERE id COLLATE utf8_unicode_ci = tenant_id;
+    SET owner_id = (SELECT owned_by FROM `Managed_property` WHERE id COLLATE utf8_unicode_ci= property_id);
+	SET address_id = (SELECT location FROM `Managed_property` WHERE id COLLATE utf8_unicode_ci = property_id);
+    DELETE t FROM `Task` t WHERE t.property_id COLLATE utf8_unicode_ci = property_id; 
+    DELETE FROM `Managed_property` WHERE id COLLATE utf8_unicode_ci= property_id;
+    DELETE FROM `Property_owner` WHERE id COLLATE utf8_unicode_ci= owner_id;
+    DELETE FROM `Address` WHERE geo_location COLLATE utf8_unicode_ci= address_id;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;

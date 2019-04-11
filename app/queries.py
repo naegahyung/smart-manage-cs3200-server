@@ -45,7 +45,7 @@ def show_property_info(id):
     `p`.`rooms`, `p`.`bathrooms`, `o`.`name` "owner_name", `o`.`phone_num` "owner_phone", `o`.`email` "owner_email",
     `a`.`street1`, `a`.`street 2`, `a`.`city`, `a`.`state`, `a`.`zip`,
     `t`.`name` "tenant_name", `t`.`credit_score`, `t`.`contract_expiration` "tenant_contract_due", `t`.`last_paid` "last_rent_payment_date" 
-    FROM `Managed_property` `p`, `property_owner` `o`, `Address` `a`, `Tenant` `t`
+    FROM `Managed_property` `p`, `Property_owner` `o`, `Address` `a`, `Tenant` `t`
     WHERE `p`.`id` = "%s"
 	AND `p`.`owned_by` = `o`.`id`
     AND `p`.`location` = `a`.`geo_location`
@@ -54,7 +54,7 @@ def show_property_info(id):
 
 def get_property_address(id):
     return '''
-    SELECT CONCAT(street1, " ", `street 2`, " ", city, " ", state, " ", zip) full_Address
+    SELECT CONCAT(street1, " ", `street 2`, " ", city, " ", state, " ", zip) full_address
 	FROM Address a, Managed_property p
     WHERE p.id = "%s"
 		AND p.location = a.geo_location
@@ -63,7 +63,7 @@ def get_property_address(id):
 
 def show_tasks_under_property(id):
     return '''
-    SELECT t.id, t.body, t.created, t.updated, CONCAT(street1, ' ', `street 2`, ' ', city, ', ', state, ' ', zip) as full_Address
+    SELECT t.id, t.body, t.created, t.updated, CONCAT(street1, ' ', `street 2`, ' ', city, ', ', state, ' ', zip) as full_address
     FROM `Task` t
     left join Managed_property p on t.property_id = p.id 
     left join Address a on p.location = a.geo_location
@@ -90,11 +90,11 @@ def search_address_query(body):
     return '''
     SELECT *
     FROM (
-        SELECT CONCAT(street1, " ", `street 2`, " ", city, " ", state, " ", zip) full_Address, p.id
+        SELECT CONCAT(street1, " ", `street 2`, " ", city, " ", state, " ", zip) full_address, p.id
         FROM Address a
         RIGHT JOIN Managed_property p on a.geo_location =  p.location
-    ) full_Addresses
-    WHERE `full_Address` LIKE "%s"
+    ) full_addresses
+    WHERE `full_address` LIKE "%s"
     LIMIT 5
     ''' % ("%" + body['query'] + "%")
 
