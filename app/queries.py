@@ -136,3 +136,9 @@ def add_tenant(body):
 
 def delete_property(body):
     return 'CALL delete_property("%s")' % (body['propertyId'])
+
+def update_property_status(body):
+    return 'UPDATE `smart_manage`.`managed_property` SET status = "%s" WHERE id = "%s"' % (body['status'], body['id'])
+
+def update_property_field(body):
+    return 'UPDATE `smart_manage`.`managed_property` SET %s = "%s" WHERE id = "%s"' % (body['key'], body['value'], body['id'])

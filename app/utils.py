@@ -1,9 +1,11 @@
 import mysql.connector as mysql
 import re
 import json
+import os
+
 
 def post_sql_data(query, body):
-    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
+    db = database_info()
     _sql_commit(db, query(body))
     result = {}
     for key, value in body.items():
@@ -25,14 +27,14 @@ def _sql_commit(db, query):
 
 
 def get_sql_data(query):
-    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
+    db = database_info()
     sql_data_with_header = _sql_execute(db, query)
     db.close()
     json_string = _convert_mysql_json_string(sql_data_with_header)
     return json.dumps(json_string)
 
 def get_sql_data_single_value(query):
-    db = mysql.connect(host='localhost',user='root',password='',database='smart_manage')
+    db = database_info()
     sql_data_with_header = _sql_execute(db, query)
     data = sql_data_with_header[1]
     print(data[0][0])
@@ -81,3 +83,14 @@ def _replace_datetime_to_time(time):
     date_numbers = time.replace('datetime.datetime(', '').replace(')', '')
     arr = date_numbers.split(', ')
     return '%s/%s/%s' % (arr[0], arr[1], arr[2])
+
+
+def database_info(): 
+    db_info = dict.fromkeys(['host', 'user', 'password', 'schema', 'port'])
+    db_info['host'] = os.getenv('DATABASE_HOST')
+    db_info['user'] = os.getenv('DATABASE_USERNAME')
+    db_info['password'] = os.getenv('DATABASE_PASSWORD')
+    db_info['schema'] = os.getenv('DATABASE_SCHEMA')
+    db_info['port'] = os.getenv('DATABASE_PORT')
+    db = mysql.connect(host=db_info['host'],user=db_info['user'],password=db_info['password'], database=db_info['schema'], port=db_info['port'])
+    return db

@@ -64,7 +64,7 @@ def initialize_routes(app):
             return get_sql_data(search_address_query(body))
         return
     
-    @app.route('/api/property', methods = ['POST', 'DELETE'])
+    @app.route('/api/property', methods = ['POST', 'DELETE', 'PATCH'])
     def create_property():
         body = json.loads(request.data)
         if request.method == 'POST':
@@ -106,4 +106,9 @@ def initialize_routes(app):
             return json.dumps(return_body)
         if request.method == 'DELETE':
             return post_sql_data(delete_property, body)
+        if request.method == 'PATCH':
+            if 'status' in body:
+                return post_sql_data(update_property_status, body)
+            if body['table'] == 'managed_property':
+                return post_sql_data(update_property_field, body)
         return ''
