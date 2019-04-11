@@ -44,7 +44,7 @@ def _sql_execute(db, query):
     try:
         cursor = db.cursor()
         cursor.execute(query)
-        row_headers = [x[0].encode('utf-8') for x in cursor.description]
+        row_headers = [x[0] for x in cursor.description]
         data = [[str(item) for item in results] for results in cursor.fetchall()]
     except (mysql.OperationalError):
         print("Attempting to reconnect for select query " + query) 
