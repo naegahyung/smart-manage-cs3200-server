@@ -9,6 +9,7 @@ app = Flask(__name__, static_folder=None)
 @app.route('/')
 def hello_world():
     return 'Welcome'
+initialize_routes(app)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
