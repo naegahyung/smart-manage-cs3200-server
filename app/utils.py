@@ -71,7 +71,7 @@ def _jsonify(header, data):
     return json_data
 
 def _convert_any_datetime_to_time(s):
-    pattern = ur"datetime\.datetime\(.[^\)]*\)"
+    pattern = r"datetime\.datetime\(.[^\)]*\)"
     datetimes = re.findall(pattern, s)
     result = s
     for time in datetimes:
