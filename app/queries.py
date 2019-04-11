@@ -1,6 +1,6 @@
 SHOW_ALL_PROPERTIES = '''
 SELECT `p`.`id`, street1, `street 2`, city, state, zip, `status`, rooms, bathrooms, rent_amount, rent_due, property_type
-FROM smart_manage.Managed_property p
+FROM Managed_property p
 LEFT JOIN address a on p.location = a.geo_location
 '''
 

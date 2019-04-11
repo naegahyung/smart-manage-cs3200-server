@@ -1,5 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS `smart_manage` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `smart_manage`;
+
 -- MySQL dump 10.13  Distrib 5.7.25, for macos10.14 (x86_64)
 --
 -- Host: localhost    Database: smart_manage
@@ -119,16 +118,7 @@ INSERT INTO `Managed_property` VALUES ('0341ed25-266a-420f-a34a-387257a50aba','4
 /*!40000 ALTER TABLE `Managed_property` ENABLE KEYS */;
 UNLOCK TABLES;
 --
--- WARNING: old server version. The following dump may be incomplete.
---
-DELIMITER ;;
-/*!50003 SET SESSION SQL_MODE="ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION" */;;
-/*!50003 CREATE */ /*!50017 DEFINER=`root`@`localhost` */ /*!50003 TRIGGER `set_null_datetime` BEFORE INSERT ON `Managed_property` FOR EACH ROW BEGIN
-	IF NEW.last_visited = '1000-01-01' THEN SET NEW.last_visited = null; END IF;
-	IF NEW.last_maintenance = '1000-01-01' THEN SET NEW.last_maintenance = null; END IF;
-	IF NEW.rent_due = '1000-01-01' THEN SET NEW.rent_due = null; END IF;
-END */;;
-DELIMITER ;
+
 
 --
 -- Table structure for table `management_company`
@@ -286,11 +276,10 @@ UNLOCK TABLES;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
 /*!50003 SET character_set_client  = utf8mb4 */ ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
-/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_property`(
+CREATE PROCEDURE `delete_property`(
 property_id VARCHAR(60)
 )
 BEGIN 
@@ -321,5 +310,16 @@ DELIMITER ;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- WARNING: old server version. The following dump may be incomplete.
+--
+DELIMITER ;;
+/*!50003 SET SESSION SQL_MODE="ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION" */;;
+/*!50003 CREATE */ /*!50003 TRIGGER `set_null_datetime` BEFORE INSERT ON `Managed_property` FOR EACH ROW BEGIN
+	IF NEW.last_visited = '1000-01-01' THEN SET NEW.last_visited = null; END IF;
+	IF NEW.last_maintenance = '1000-01-01' THEN SET NEW.last_maintenance = null; END IF;
+	IF NEW.rent_due = '1000-01-01' THEN SET NEW.rent_due = null; END IF;
+END */;;
+DELIMITER ;
 
 -- Dump completed on 2019-04-10 11:43:31
