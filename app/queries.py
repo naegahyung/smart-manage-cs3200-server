@@ -52,7 +52,7 @@ def show_property_info(id):
     AND `t`.`living_location` = "%s"
     """ % (id, id)
 
-def get_property_Address(id):
+def get_property_address(id):
     return '''
     SELECT CONCAT(street1, " ", `street 2`, " ", city, " ", state, " ", zip) full_Address
 	FROM Address a, Managed_property p
@@ -86,7 +86,7 @@ def add_task_with_property(body):
 def delete_task(body):
     return 'DELETE FROM `Task` WHERE `id` = "%s"' % (body['data']['id'])
 
-def search_Address_query(body):
+def search_address_query(body):
     return '''
     SELECT *
     FROM (
@@ -112,7 +112,7 @@ def add_owner(body):
     VALUES ("%s", "%s", "%s", "%s")
     ''' % (body['id'], body['name'], body['email'], body['phoneNum'])
 
-def add_Address(body):
+def add_address(body):
     return '''
     INSERT INTO `Address` (geo_location, street1, `street 2`, city, state, zip)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s")
