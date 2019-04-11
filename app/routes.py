@@ -1,5 +1,5 @@
-from utils import get_sql_data, post_sql_data, get_sql_data_single_value
-from queries import *
+from .utils import get_sql_data, post_sql_data, get_sql_data_single_value
+from .queries import *
 from flask import request
 import json
 import uuid

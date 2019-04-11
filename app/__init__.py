@@ -1,5 +1,5 @@
 from flask import Flask
-from routes import initialize_routes
+from .routes import initialize_routes
 from dotenv import load_dotenv
 import json
 import os
