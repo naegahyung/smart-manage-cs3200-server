@@ -6,7 +6,7 @@ LEFT JOIN address a on p.location = a.geo_location
 
 SHOW_ALL_TASKS = '''
 SELECT t.id, t.body, t.created, t.updated, CONCAT(street1, ' ', `street 2`, ' ', city, ', ', state, ' ', zip) as full_address
-FROM `smart_manage`.`task` t
+FROM `task` t
 left join managed_property p on t.property_id = p.id 
 left join address a on p.location = a.geo_location
 WHERE t.`done` = 0 
@@ -17,18 +17,18 @@ SHOW_ALL_NEWS = '''
 SELECT * 
 FROM (	
     SELECT "property" as `label`, "rent_due" as `field`, `street1`, `street 2`, `city`, `state`, `zip`, `rent_due` as `due`
-	FROM `smart_manage`.`managed_property` `p`
-	LEFT JOIN `smart_manage`.`address` `a` ON `p`.`location` = `a`.`geo_location`
+	FROM `managed_property` `p`
+	LEFT JOIN `address` `a` ON `p`.`location` = `a`.`geo_location`
 	WHERE `rent_due` is NOT NULL
 	UNION ALL
 	SELECT "property" as `label`, "last_visited" as `field`, `street1`, `street 2`, `city`, `state`, `zip`, `last_visited` as `due`
-	FROM `smart_manage`.`managed_property` `p`
-	LEFT JOIN `smart_manage`.`address` `a` ON `p`.`location` = `a`.`geo_location`
+	FROM `managed_property` `p`
+	LEFT JOIN `address` `a` ON `p`.`location` = `a`.`geo_location`
 	WHERE `last_visited` is NOT NULL
 	UNION ALL
 	SELECT "property" as `label`, "last_maintenance" as `field`, `street1`, `street 2`, `city`, `state`, `zip`, `last_maintenance` as `due`
-	FROM `smart_manage`.`managed_property` `p`
-	LEFT JOIN `smart_manage`.`address` `a` ON `p`.`location` = `a`.`geo_location`
+	FROM `managed_property` `p`
+	LEFT JOIN `address` `a` ON `p`.`location` = `a`.`geo_location`
 	WHERE `last_maintenance` is NOT NULL
 ) as all_updates
 WHERE `all_updates`.`due` > DATE_SUB(NOW(), INTERVAL 1 MONTH)
@@ -45,7 +45,7 @@ def show_property_info(id):
     `p`.`rooms`, `p`.`bathrooms`, `o`.`name` "owner_name", `o`.`phone_num` "owner_phone", `o`.`email` "owner_email",
     `a`.`street1`, `a`.`street 2`, `a`.`city`, `a`.`state`, `a`.`zip`,
     `t`.`name` "tenant_name", `t`.`credit_score`, `t`.`contract_expiration` "tenant_contract_due", `t`.`last_paid` "last_rent_payment_date" 
-    FROM `smart_manage`.`Managed_property` `p`, `smart_manage`.`property_owner` `o`, `smart_manage`.`address` `a`, `smart_manage`.`tenant` `t`
+    FROM `Managed_property` `p`, `property_owner` `o`, `address` `a`, `tenant` `t`
     WHERE `p`.`id` = "%s"
 	AND `p`.`owned_by` = `o`.`id`
     AND `p`.`location` = `a`.`geo_location`
@@ -64,7 +64,7 @@ def get_property_address(id):
 def show_tasks_under_property(id):
     return '''
     SELECT t.id, t.body, t.created, t.updated, CONCAT(street1, ' ', `street 2`, ' ', city, ', ', state, ' ', zip) as full_address
-    FROM `smart_manage`.`task` t
+    FROM `task` t
     left join managed_property p on t.property_id = p.id 
     left join address a on p.location = a.geo_location
     WHERE t.`done` = 0 AND p.id = "%s" 
@@ -73,18 +73,18 @@ def show_tasks_under_property(id):
 
 def add_task(body):
     return '''
-    INSERT INTO `smart_manage`.`task` (id, body, created, created_by, updated, done)
+    INSERT INTO `task` (id, body, created, created_by, updated, done)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s")
     ''' % (body['id'], body['body'], body['created'], body['created_by'], body['updated'], body['done'])
 
 def add_task_with_property(body):
     return '''
-    INSERT INTO `smart_manage`.`task` (id, body, created, created_by, updated, done, property_id)
+    INSERT INTO `task` (id, body, created, created_by, updated, done, property_id)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s")
     ''' % (body['id'], body['body'], body['created'], body['created_by'], body['updated'], body['done'], body['property_id'])
 
 def delete_task(body):
-    return 'DELETE FROM `smart_manage`.`task` WHERE `id` = "%s"' % (body['data']['id'])
+    return 'DELETE FROM `task` WHERE `id` = "%s"' % (body['data']['id'])
 
 def search_address_query(body):
     return '''
@@ -100,7 +100,7 @@ def search_address_query(body):
 
 def update_task_body(body):
     return '''
-    UPDATE `smart_manage`.`task`
+    UPDATE `task`
     SET body = "%s", updated = "%s"
     WHERE id = "%s"
     ''' % (body['body'], body['updated'], body['id'])
@@ -108,19 +108,19 @@ def update_task_body(body):
 
 def add_owner(body):
     return '''
-    INSERT INTO `smart_manage`.`Property_owner` (id, name, email, phone_num)
+    INSERT INTO `Property_owner` (id, name, email, phone_num)
     VALUES ("%s", "%s", "%s", "%s")
     ''' % (body['id'], body['name'], body['email'], body['phoneNum'])
 
 def add_address(body):
     return '''
-    INSERT INTO `smart_manage`.`Address` (geo_location, street1, `street 2`, city, state, zip)
+    INSERT INTO `Address` (geo_location, street1, `street 2`, city, state, zip)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s")
     ''' % (body['id'], body['street1'], body['street2'], body['city'], body['state'], body['zip'])
 
 def add_property(body):
     return '''
-    INSERT INTO `smart_manage`.`Managed_property` 
+    INSERT INTO `Managed_property` 
     (id, location, property_type, managed_by, owned_by, last_maintenance, last_visited, 
     value, tax_amount, rent_due, total_spending, rent_amount, status, rooms, bathrooms)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s", "%s")
@@ -130,7 +130,7 @@ def add_property(body):
 
 def add_tenant(body):
     return '''
-    INSERT INTO `smart_manage`.`Tenant` (id, name, last_paid, living_location, credit_score, contract_expiration)
+    INSERT INTO `Tenant` (id, name, last_paid, living_location, credit_score, contract_expiration)
     VALUES ("%s", "%s", "%s", "%s", "%s", "%s")
     ''' % (body['id'], body['name'], body['lastPaid'], body['location'], body['creditScore'], body['contractExpiration'])
 
@@ -138,7 +138,7 @@ def delete_property(body):
     return 'CALL delete_property("%s")' % (body['propertyId'])
 
 def update_property_status(body):
-    return 'UPDATE `smart_manage`.`managed_property` SET status = "%s" WHERE id = "%s"' % (body['status'], body['id'])
+    return 'UPDATE `managed_property` SET status = "%s" WHERE id = "%s"' % (body['status'], body['id'])
 
 def update_property_field(body):
-    return 'UPDATE `smart_manage`.`managed_property` SET %s = "%s" WHERE id = "%s"' % (body['key'], body['value'], body['id'])
+    return 'UPDATE `managed_property` SET %s = "%s" WHERE id = "%s"' % (body['key'], body['value'], body['id'])
