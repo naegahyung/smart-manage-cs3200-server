@@ -1,6 +1,6 @@
 # CS3200 Smart Manage Server side
 
-This is a server side code for CS3200 project.
+This is a server-side code for CS3200 project.
 
 ## Getting Started
 
@@ -19,19 +19,29 @@ virtualenv
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+A step by step series of examples that tell you how to get a development env running.
 
-Say what the step will be
+Before starting a development server, you must have SQL table defined. Data/smart_manage.sql is a dump file you can use.
+You must create an .env file or a way to set environmental variables on the initiation of the server.
+You must have the following environmental variables: 
 
-1. dump data to mysql. database name will be `smart_manage`.
-2. the current code uses database with username `admin` and no password. Choose your own database credentials
-3. source venv/bin/activiate
-4. pip install
+```
+DATABASE_USERNAME=root
+DATABASE_PASSWORD=
+DATABASE_SCHEMA= ?? YOUR_CHOICE ??
+DATABASE_PORT=3306
+DATABASE_HOST=localhost
+PORT=5000
+```
 
-End with an example of getting some data out of the system or using it for a little demo
+1. virtualenv venv
+2. pip install 
 
 ### Running
 
+Once you have set up everything correctly, you won't see any error running the server.
+
+You run the server by:
 ```
 flask run
 ```
