@@ -6,7 +6,9 @@ import os
 
 def post_sql_data(query, body):
     db = database_info()
-    _sql_commit(db, query(body))
+    error = _sql_commit(db, query(body))
+    if error == 'error':
+        return 'error'
     result = {}
     for key, value in body.items():
         result[str(key)] = str(value)
@@ -17,13 +19,17 @@ def _sql_commit(db, query):
         cursor = db.cursor()
         cursor.execute(query)
         db.commit()
+    except mysql.Error as err:
+        print("Something went wrong: {}".format(err))
+        return 'error'
     except (mysql.OperationalError):
         print("Attempting to reconnect for select query" + query) 
         db.connect()
         _sql_commit(db, query)
-    finally:
+    else:
         cursor.close()
         db.close()
+        return ''
 
 
 def get_sql_data(query):
@@ -44,7 +50,7 @@ def _sql_execute(db, query):
     try:
         cursor = db.cursor()
         cursor.execute(query)
-        row_headers = [x[0] for x in cursor.description]
+        row_headers = [str(x[0]) for x in cursor.description]
         data = [[str(item) for item in results] for results in cursor.fetchall()]
     except (mysql.OperationalError):
         print("Attempting to reconnect for select query " + query) 
