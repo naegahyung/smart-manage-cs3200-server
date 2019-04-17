@@ -35,7 +35,8 @@ PORT=5000
 ```
 
 1. virtualenv venv
-2. pip install 
+2. venv source/bin/activate
+3. pip install 
 
 ### Running
 
@@ -45,3 +46,7 @@ You run the server by:
 ```
 flask run
 ```
+
+### Testing
+
+There is a remote server already running on heroku for any testing of existing API. Contact me for the url.
