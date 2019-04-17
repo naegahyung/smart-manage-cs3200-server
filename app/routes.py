@@ -1,6 +1,6 @@
 from .utils import get_sql_data, post_sql_data, get_sql_data_single_value
 from .queries import *
-from flask import request
+from flask import request, make_response
 import json
 import uuid
 import datetime
@@ -110,5 +110,8 @@ def initialize_routes(app):
             if 'status' in body:
                 return post_sql_data(update_property_status, body)
             if body['table'] == 'managed_property':
-                return post_sql_data(update_property_field, body)
+                res = post_sql_data(update_property_field, body)
+                if res == 'error':
+                    return make_response(res, 422)
+                return res
         return ''
